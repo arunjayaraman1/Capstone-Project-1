@@ -121,3 +121,4 @@ The system uses an in-memory vector store that stores:
 - Source document names
 
 **Note**: The current implementation uses an in-memory store, so data is lost when the server restarts. For production use, consider implementing a persistent vector database (e.g., Chroma, Pinecone, or FAISS with disk persistence).
+# Capstone-Project-1
