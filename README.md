@@ -35,9 +35,11 @@ This is a Retrieval-Augmented Generation (RAG) system that enables users to uplo
    pip install -r requirements.txt
    ```
 
-4. Create a `.env` file in the `backend` directory with your OpenAI API key:
+4. (Optional LLAMA Added)Create a `.env` file in the `backend` directory with your OpenAI API key:
+   
    ```
    OPENAI_API_KEY=your_api_key_here
+
    ```
 
 5. Run the FastAPI server:
