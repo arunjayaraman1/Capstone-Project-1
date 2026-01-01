@@ -4,13 +4,8 @@ from embeddings import create_embedding
 from vector_store import add_embeddings
 from vector_store import search_similar_chunks
 from llm import generate_answer
-
 from pydantic import BaseModel
-
-
-
 from fastapi import FastAPI, UploadFile, File
-
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import shutil
@@ -43,12 +38,17 @@ async def upload_document(file: UploadFile = File(...)):
     chunks = chunk_text(text)
 
     embeddings = [create_embedding(chunk) for chunk in chunks]
-
+    # print(f"Embeddings created: {len(embeddings)}")
+    # print(f"Chunks: {chunks}")
+    # print(f"Embeddings: {embeddings}")
+    
     add_embeddings(
         chunks=chunks,
         embeddings=embeddings,
         document_name=file.filename
     )
+
+
 
     return {
     "filename": file.filename,
@@ -59,6 +59,7 @@ async def upload_document(file: UploadFile = File(...)):
 
 class QuestionRequest(BaseModel):
     question: str
+    
 @app.post("/ask")
 async def ask_question(request: QuestionRequest):
     question_embedding = create_embedding(request.question)

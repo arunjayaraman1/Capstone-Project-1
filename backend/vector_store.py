@@ -12,8 +12,9 @@ def add_embeddings(chunks, embeddings, document_name):
 
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
-
+    
 def search_similar_chunks(query_embedding, top_k=3):
+    
     scores = []
 
     for item in vector_store:
