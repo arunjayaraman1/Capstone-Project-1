@@ -8,14 +8,16 @@ This is a Retrieval-Augmented Generation (RAG) system that enables users to uplo
 - Upload and process PDF and TXT documents
 - Automatic text chunking with overlap for better context preservation
 - Semantic search using embeddings to find relevant document sections
-- Question answering powered by OpenAI's GPT model
-- Simple web interface for document upload and Q&A
+- Question answering powered by multiple LLMs (OpenAI GPT-4o-mini or Llama 3 via Ollama)
+- Simple web interface for document upload and Q&A with LLM selection
+- Persistent vector storage using ChromaDB
 
 ## How to Run
 
 ### Prerequisites
 - Python 3.8 or higher
-- OpenAI API key
+- OpenAI API key (for GPT model)
+- Ollama installed and Llama 3 model pulled (for Llama model - optional)
 
 ### Backend Setup and Execution
 
@@ -35,11 +37,15 @@ This is a Retrieval-Augmented Generation (RAG) system that enables users to uplo
    pip install -r requirements.txt
    ```
 
-4. (Optional LLAMA Added)Create a `.env` file in the `backend` directory with your OpenAI API key:
+4. Create a `.env` file in the `backend` directory with your OpenAI API key (required for GPT model):
    
    ```
    OPENAI_API_KEY=your_api_key_here
+   ```
 
+   Note: If you want to use Llama 3, make sure Ollama is installed and the model is available:
+   ```bash
+   ollama pull llama3
    ```
 
 5. Run the FastAPI server:
@@ -78,14 +84,26 @@ This is a Retrieval-Augmented Generation (RAG) system that enables users to uplo
 2. Open the Streamlit UI in your browser
 3. Upload a PDF or TXT document
 4. Wait for the document to be processed
-5. Enter your question and click "Get Answer"
+5. Select which LLM to use (GPT or Llama) from the radio buttons
+6. Enter your question and click "Get Answer"
 
 ## LLM and Embedding Model
 
-### LLM Model
-- **Model**: `gpt-4o-mini` (OpenAI)
-- **Purpose**: Generates answers based on retrieved document chunks
-- **Configuration**: Temperature set to 0 for consistent, deterministic responses
+### LLM Models
+The system supports two LLM options:
+
+1. **GPT Model**
+   - **Model**: `gpt-4o-mini` (OpenAI)
+   - **Purpose**: Generates answers based on retrieved document chunks
+   - **Configuration**: Temperature set to 0 for consistent, deterministic responses
+   - **Requires**: OpenAI API key
+
+2. **Llama Model**
+   - **Model**: `llama3` (via Ollama)
+   - **Purpose**: Generates answers based on retrieved document chunks (local/self-hosted alternative)
+   - **Requires**: Ollama installed locally with llama3 model pulled
+
+Users can select which LLM to use through the web interface when asking questions.
 
 ### Embedding Model
 - **Model**: `all-MiniLM-L6-v2` (Sentence Transformers)
@@ -117,10 +135,11 @@ This overlap strategy helps maintain continuity and ensures that concepts spanni
 5. **Answer Generation**: The LLM generates an answer using only the provided context, ensuring responses are grounded in the uploaded documents.
 
 ### Vector Store
-The system uses an in-memory vector store that stores:
-- Document chunks (text)
-- Corresponding embeddings (vectors)
-- Source document names
+The system uses **ChromaDB** (PersistentClient) as the vector database, which provides:
+- Persistent storage of document chunks (text)
+- Corresponding embeddings (vectors) - 384-dimensional embeddings from all-MiniLM-L6-v2
+- Source document metadata
+- Automatic persistence to disk in the `backend/chroma_db` directory
+- Cosine similarity search for semantic retrieval
 
-**Note**: The current implementation uses an in-memory store, so data is lost when the server restarts. For production use, consider implementing a persistent vector database (e.g., Chroma, Pinecone, or FAISS with disk persistence).
-# Capstone-Project-1
+**Note**: Data is automatically persisted to disk, so uploaded documents and their embeddings remain available after server restarts. The ChromaDB database files are stored in the `backend/chroma_db` directory.
