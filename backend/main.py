@@ -59,6 +59,7 @@ async def upload_document(file: UploadFile = File(...)):
 
 class QuestionRequest(BaseModel):
     question: str
+    llm_type: str = "gpt"  # Default to GPT
     
 @app.post("/ask")
 async def ask_question(request: QuestionRequest):
@@ -75,7 +76,12 @@ async def ask_question(request: QuestionRequest):
         [chunk["chunk"] for chunk in relevant_chunks]
     )
 
-    answer = generate_answer(context, request.question)
+    # Validate llm_type
+    llm_type = request.llm_type.lower()
+    if llm_type not in ["gpt", "llama"]:
+        llm_type = "gpt"  # Default to GPT if invalid
+
+    answer = generate_answer(context, request.question, llm_type)
 
     return {
         "answer": answer,

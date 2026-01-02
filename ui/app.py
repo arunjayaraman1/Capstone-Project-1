@@ -28,19 +28,32 @@ if uploaded_file is not None:
 # Question Section
 st.header("Ask a Question")
 
+# LLM Selection
+llm_choice = st.radio(
+    "Select LLM to use:",
+    ["GPT", "Llama"],
+    horizontal=True,
+    help="Choose which language model to use for generating answers"
+)
+
 question = st.text_input("Enter your question")
 
 if st.button("Get Answer"):
     if not question:
         st.warning("Please enter a question")
     else:
-        payload = {"question": question}
+        # Convert UI choice to backend format (lowercase)
+        llm_type = "gpt" if llm_choice == "GPT" else "llama"
+        payload = {"question": question, "llm_type": llm_type}
         response = requests.post(f"{BACKEND_URL}/ask", json=payload)
 
         if response.status_code == 200:
             result = response.json()
             st.subheader("Answer")
             st.write(result["answer"])
+            
+            # Display which LLM was used
+            st.caption(f"Generated using: {llm_choice}")
 
             if result.get("sources"):
                 st.subheader("Sources")
